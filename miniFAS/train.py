@@ -1,0 +1,39 @@
+# -*- coding: utf-8 -*-
+# @Time : 20-6-3 下午5:39
+# @Author : zhuying
+# @Company : Minivision
+# @File : train.py
+# @Software : PyCharm
+
+import argparse
+import os
+from src.default_config import get_default_config, update_config
+from src.train_main import TrainMain
+import warnings
+warnings.filterwarnings("ignore")
+
+
+
+def parse_args():
+    """parsing and configuration"""
+    desc = "Silence-FAS"
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--device_ids", type=str, default="1", help="which gpu id, 0123")
+    parser.add_argument("--patch_info", type=str, default="4_80x80",
+                        help="[org_1_80x60 / 1_80x80 / 2.7_80x80 / 4_80x80]")
+    parser.add_argument('--load_pretrain', type=bool, default= True)
+    parser.add_argument('--pretrain_dir', type=str, default= "miniFAS/resources/anti_spoof_models/4_0_0_80x80_MiniFASNetV1SE.pth")
+    args = parser.parse_args()
+    cuda_devices = [int(elem) for elem in args.device_ids]
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(map(str, cuda_devices))
+    args.devices = [x for x in range(len(cuda_devices))]
+    return args
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    conf = get_default_config()
+    conf = update_config(args, conf)
+    trainer = TrainMain(conf)
+    trainer.train_model()
+
