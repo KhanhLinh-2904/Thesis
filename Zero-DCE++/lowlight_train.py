@@ -21,10 +21,8 @@ torch.cuda.empty_cache()
 gc.collect()
 
 
-# Save the current standard output
 original_stdout = sys.stdout
-# test_folder = 'data/FAS_Thuan/test'
-# train1_fold = 'data/FAS_Thuan/train1'
+
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
@@ -49,7 +47,7 @@ def validate(val_loader, model, criterion):
 
 def train(config):
 
-	os.environ['CUDA_VISIBLE_DEVICES']='1'
+	os.environ['CUDA_VISIBLE_DEVICES']='0'
 	scale_factor = config.scale_factor
 	DCE_net = model.enhance_net_nopool(scale_factor).cuda()
 
@@ -69,7 +67,6 @@ def train(config):
 	# L_exp = Myloss.L_exp(16,0.6)
 	L_TV = Myloss.L_TV()
 
-	# criterion = nn.L1Loss() 
 
 	optimizer = torch.optim.Adam(DCE_net.parameters(), lr=config.lr, weight_decay=config.weight_decay)
 	
@@ -80,7 +77,6 @@ def train(config):
 		loss_value = []
 		for iteration, train_img_lowlight in enumerate(train_loader):
 			train_img_lowlight = train_img_lowlight.cuda()
-
 			E = 0.6
 
 			enhanced_image,A  = DCE_net(train_img_lowlight)
@@ -90,29 +86,7 @@ def train(config):
 			loss_col = 5*torch.mean(L_color(enhanced_image))
 			loss_exp = 10*torch.mean(L_exp(enhanced_image,E))
 
-			# print(Loss_TV)
-			# print(loss_spa)
-			# print(loss_col)
-			# print(loss_exp)
-			# print('-------------')
-			# best_loss
 			loss =  Loss_TV + loss_spa + loss_col + loss_exp
-
-			# E = 0.6
-			# w_col = 0.5
-			# w_tvA =  20
-
-			# enhanced_image, A  = DCE_net(train_img_lowlight)
-			# Loss_TV = L_TV(A)
-			# Loss_TV = torch.mean(Loss_TV)
-			# # Loss_TV = 200*L_TV(A)			
-			# loss_spa = torch.mean(L_spa(enhanced_image, train_img_lowlight))
-			# loss_col = torch.mean(L_color(enhanced_image))
-			# loss_exp = torch.mean(L_exp(enhanced_image,E))
-
-			# # best_loss
-			# loss =  (Loss_TV + loss_spa + w_col*loss_col + w_tvA*loss_exp)
-			# print(loss)
 
 			optimizer.zero_grad()
 			loss.backward()
@@ -125,11 +99,6 @@ def train(config):
 				torch.save(DCE_net.state_dict(), config.snapshots_folder + "Epoch" + str(epoch) + '.pth') 		
 
 			loss_value.append(loss.item())
-		# Validate the model after each epoch
-	# 	val_loss = validate(val_loader, DCE_net, criterion)
-	# 	print("epoch: ", epoch)
-	# 	print("loss_epoch: ", val_loss)
-
 
 		if epoch == 0:
 			min_loss_epoch = np.mean(loss_value)
@@ -152,19 +121,19 @@ if __name__ == "__main__":
 	# Input Parameters
 	# parser.add_argument('--lowlight_images_path', type=str, default="data/train_data/") #original
 
-	parser.add_argument('--lowlight_images_path', type=str, default="Zero-DCE++/data/FAS_Thuan/train/")
+	parser.add_argument('--lowlight_images_path', type=str, default="Zero-DCE++/data/SICE_Part1_train")
 
 	parser.add_argument('--lr', type=float, default=0.0001)
 	parser.add_argument('--weight_decay', type=float, default=0.0001)
 	parser.add_argument('--grad_clip_norm', type=float, default=0.1)
-	parser.add_argument('--num_epochs', type=int, default=100)
+	parser.add_argument('--num_epochs', type=int, default=1000)
 	parser.add_argument('--train_batch_size', type=int, default=8)
 	parser.add_argument('--val_batch_size', type=int, default=8)
 	parser.add_argument('--num_workers', type=int, default=4)
 	parser.add_argument('--display_iter', type=int, default=50)
 	parser.add_argument('--snapshot_iter', type=int, default=10)
 	parser.add_argument('--scale_factor', type=int, default=1)
-	parser.add_argument('--snapshots_folder', type=str, default="Zero-DCE++/snapshots_new_100/")
+	parser.add_argument('--snapshots_folder', type=str, default="Zero-DCE++/snapshots_1000/")
 	parser.add_argument('--load_pretrain', type=bool, default= True)
 	parser.add_argument('--pretrain_dir', type=str, default= "Zero-DCE++/snapshots_Zero_DCE++/Epoch99.pth")
 

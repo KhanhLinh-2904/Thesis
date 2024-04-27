@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	DCE_net.load_state_dict(torch.load('snapshots_Zero_DCE++/Epoch99.pth', map_location=torch.device('cpu')))
 	with torch.no_grad():
 
-		filePath = '/home/linhhima/low_light_enhancement/Zero-DCE++/data/test_data/real/11_0_.png'
+		filePath = ''
 		sum_time = 0
 		for i in range(0, 110):
 			inference_time = lowlight(filePath)

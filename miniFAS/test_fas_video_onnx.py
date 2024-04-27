@@ -8,29 +8,42 @@ from tqdm import tqdm
 
 from function_model.fas import FaceAntiSpoofing
 from function_model.llie import LowLightEnhancer
-from utils.custom_utils import tracking
+from utils.custom_utils import detect_face, tracking
 
-model_1 = "miniFAS/model_onnx/new/2.7_80x80_MiniFASNetV2.onnx"
-model_2 = "miniFAS/model_onnx/new/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/Zero_DCE++new.onnx'
-dataset = 'miniFAS/datasets/Test/low-light-face-video-Hiep'
+dataset = "miniFAS/datasets/Test/low-light-face-video-Hiep"
+
+fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx"
+fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
+fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
+fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
+model_llie = 'miniFAS/model_onnx/ZeroDCE++scale12.onnx'
+
 under_threshold = 8
 over_threshold = 100
 scale_factor = 12
-fas_model1 = FaceAntiSpoofing(model_1)
-fas_model2 = FaceAntiSpoofing(model_2)
-lowlight_enhancer = LowLightEnhancer(scale_factor=12, model_onnx=model_llie)
+fas1_lowlight = FaceAntiSpoofing(fas1_lowlight_path)
+fas2_lowlight = FaceAntiSpoofing(fas2_lowlight_path)
+fas1_normal = FaceAntiSpoofing(fas1_normal_path)
+fas2_normal = FaceAntiSpoofing(fas2_normal_path)
+lowlight_enhancer = LowLightEnhancer(scale_factor=scale_factor, model_onnx=model_llie)
+
+def apply_fft_and_remove_noise(image):
+    #Return multidimensional discrete Fourier transform.
+   blurred_img = cv2.fastNlMeansDenoisingColored(image, None, 3,3,7,21)
+   return blurred_img
+
 def camera(video_path):
     frame_fas = []
     cap = cv2.VideoCapture(video_path)
-    frame_number = 12
-    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number - 1)
+    # frame_number = 12
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number - 1)
     count_frame = 0
-    # count_non_face = 0
     num_frames = 0
     while cap.isOpened():
        
         ret, frame = cap.read()
+        is_lowlight = False
+
         num_frames += 1
         if ret is False:
             break
@@ -38,17 +51,19 @@ def camera(video_path):
         if threshold_img < under_threshold:
             continue
         elif threshold_img < over_threshold and threshold_img >= under_threshold:
-                frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
-                frame = frame[:, :, ::-1]
-        image_bbox = fas_model1.get_bbox_face(frame)
+            frame = apply_fft_and_remove_noise(frame)
+            frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
+            frame = frame[:, :, ::-1]
+            is_lowlight = True
+
+        image_bbox, _ = detect_face(frame)
         if image_bbox is not None:
             new_gister = tracking(image_bbox, frame)
         else:
             new_gister = False
-            # count_non_face += 1
             continue
         if new_gister and image_bbox is not None:
-            frame_fas.append(frame)
+            frame_fas.append([frame, is_lowlight])
             count_frame += 1
         
         if count_frame == 5:
@@ -67,9 +82,12 @@ def anti_spoofing(frame_fas):
 
         detections = frame_fas
 
-        for frame in detections:
+        for [frame, is_lowlight] in detections:
             frame = np.asarray(frame, dtype=np.uint8) 
-            prediction = fas_model1.predict(frame) + fas_model2.predict(frame)
+            if is_lowlight:
+                prediction = fas1_lowlight.predict(frame) + fas2_lowlight.predict(frame)
+            else:
+                prediction = fas1_normal.predict(frame) + fas2_normal.predict(frame)
             output = np.argmax(prediction)
 
             if output == 1:

@@ -18,7 +18,7 @@ from src.utility import parse_model_name
 warnings.filterwarnings('ignore')
 
 
-SAMPLE_IMAGE_PATH = "miniFAS/datasets/Test/anti_spoofing_dark_dataset/fake/1_1.png"
+SAMPLE_IMAGE_PATH = "Zero-DCE++/data/result_test/"
 
 
 # 因为安卓端APK获取的视频流宽高比为3:4,为了与之一致，所以将宽高比限制为3:4
@@ -38,7 +38,9 @@ def test(image_name, model_dir, device_id):
     # result = check_image(image)
     # if result is False:
     #     return
-    image_bbox = model_test.get_bbox(image)
+    image_bbox, _ = model_test.get_bbox(image)
+    if image_bbox is None:
+        return
     prediction = np.zeros((1, 3))
     test_speed = 0
     # sum the prediction from single model's result
@@ -98,12 +100,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_dir",
         type=str,
-        default="./resources/anti_spoof_models",
+        default="miniFAS/resources/anti_spoof_models/",
         help="model_lib used to test")
     parser.add_argument(
         "--image_name",
         type=str,
-        default="image_F1.jpg",
+        default="IMG_0357.jpg",
         help="image used to test")
     args = parser.parse_args()
     test(args.image_name, args.model_dir, args.device_id)

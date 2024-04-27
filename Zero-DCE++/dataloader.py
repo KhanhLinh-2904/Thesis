@@ -8,6 +8,7 @@ import torch.utils.data as data
 import numpy as np
 from PIL import Image
 import glob
+import cv2
 import random
 from torch.utils.data import random_split
 
@@ -29,7 +30,9 @@ def populate_train_list(lowlight_images_path):
 
 	return train_list
 
-	
+def remove_noise(image):
+   blurred_img = cv2.fastNlMeansDenoisingColored(image, None, 3,3,7,21)
+   return blurred_img	
 
 class lowlight_loader(data.Dataset):
 
@@ -46,6 +49,8 @@ class lowlight_loader(data.Dataset):
 		data_lowlight_path = self.data_list[index]
 		
 		data_lowlight = Image.open(data_lowlight_path)
+		# data_lowlight = remove_noise(data_lowlight)
+
 		data_lowlight = data_lowlight.resize((self.size,self.size), PIL.Image.Resampling.LANCZOS)
 		data_lowlight = (np.asarray(data_lowlight)/255.0) 
 		data_lowlight = torch.from_numpy(data_lowlight).float()

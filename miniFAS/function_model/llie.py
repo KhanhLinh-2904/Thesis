@@ -30,13 +30,12 @@ class LowLightEnhancer:
         h = (img_processed.shape[0] // self.scale_factor) * self.scale_factor
         w = (img_processed.shape[1] // self.scale_factor) * self.scale_factor
         img_processed = img_processed[0:h, 0:w, :]
-        img_processed = img_processed.permute(2, 0, 1)
+        img_processed = img_processed.permute(2,0,1)
         img_processed = img_processed.unsqueeze(0)
         return img_processed
 
     def enhance(self, image):
         img_processed = self.preprocess(image)
-
         ort_inputs = {self.ort_session.get_inputs()[0].name: to_numpy(img_processed)}
         
         onnxruntime_outputs = self.ort_session.run(None, ort_inputs)

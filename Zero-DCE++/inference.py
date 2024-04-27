@@ -6,9 +6,9 @@ import time
 import cv2
 from tqdm import tqdm
 from lowlight_enhance import LowLightEnhancer
-model_onnx= 'Zero-DCE++/ZeroDCE++99.onnx'
-dataset = 'Zero-DCE++/data/FAS_Thuan/train'	
-save_path = 'Zero-DCE++/data/FAS_Thuan/result_train_100'
+model_onnx= 'Zero-DCE++/ZeroDCE++.onnx'
+dataset = 'Zero-DCE++/data/train'	
+save_path = 'Zero-DCE++/data/result_train'
 scale_factor = 12
 
 def lowlight(img, image_name, save_path, model):
@@ -32,6 +32,7 @@ if __name__ == '__main__':
 			path_to_image = os.path.join(dataset, file_name)
 			img = cv2.imread(path_to_image)
 			img = img[:, :, ::-1]
+			
 			# if lowlight_enhance.is_lowlight(img, threshold):
 			sum_time = sum_time + lowlight(img, file_name, save_path, lowlight_enhance)
 		print(sum_time)

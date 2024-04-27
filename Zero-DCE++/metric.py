@@ -110,7 +110,7 @@ def calculate_metrics(original_img, enhanced_img):
 if __name__ == '__main__':
     
     original_image_folder = 'Zero-DCE++/data/label_SICE_Part2'
-    enhanced_image_folder = 'Zero-DCE++/data/result_Test_Part2_pretrained'
+    enhanced_image_folder = 'Zero-DCE++/data/result_Test_Part2'
 
     images = os.listdir(enhanced_image_folder)
     psnr_arr = []

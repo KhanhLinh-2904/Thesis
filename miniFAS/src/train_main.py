@@ -18,12 +18,6 @@ from src.data_io.dataset_loader import get_train_loader
 from src.model_lib.MultiFTNet import MultiFTNet
 from src.utility import get_time
 
-#within folder
-# from model_lib.MultiFTNet import MultiFTNet
-# from data_io.dataset_loader import get_train_loader
-# from utility import get_time
-
-# print('2')
 
 class TrainMain:
     def __init__(self, conf):
@@ -133,23 +127,9 @@ class TrainMain:
         
         model = MultiFTNet(**param).to(self.conf.device)
         model = torch.nn.DataParallel(model, self.conf.devices)
-        if self.conf.load_pretrain == True:
-            # pretrained_model_state_dict = torch.load(self.conf.pretrain_dir)
-            # # this is for 2.7
-            # # new_state_dict = {}
-            # # for key, value in pretrained_model_state_dict.items():
-            # #     new_key = key.replace("module.", "module.model.")
-            # #     new_state_dict[new_key] = value
-            # # this is for 4.0
-            # new_state_dict = OrderedDict()
-            # for k, v in pretrained_model_state_dict.items():
-            #     name = k[7:]  # Remove 'module.'
-            #     new_state_dict[name] = v
 
-            # load_state_dict = {key: model.state_dict()[key] for key in model.state_dict() if key not in new_state_dict}
-            # load_state_dict.update(new_state_dict)
-            # model.load_state_dict(load_state_dict,strict=False)
-            state_dict = torch.load(self.conf.pretrain_dir)
+        if self.conf.load_pretrain == True:
+            state_dict = torch.load(self.conf.pretrain_dir, map_location=self.conf.device)
 
             keys = iter(state_dict)
             first_layer_name = keys.__next__()
@@ -157,12 +137,13 @@ class TrainMain:
                 from collections import OrderedDict
                 new_state_dict = OrderedDict()
                 for key, value in state_dict.items():
-                    # name_key = key[7:]
-                    name_key = key[0:]
+                    # name_key = 'model.' + key[7:]
+                    name_key = key[0:7] + 'model.'+key[7:]
+
                     new_state_dict[name_key] = value
-                model.load_state_dict(new_state_dict)
+                model.load_state_dict(new_state_dict, strict=False)
             else:
-                model.load_state_dict(state_dict)
+                model.load_state_dict(state_dict, strict=False)
         
         model.to(self.conf.device)
         

@@ -23,9 +23,9 @@ def get_default_config():
     # [9, 13, 15]
     conf.milestones = [10, 15, 22]  # down learing rate
     conf.gamma = 0.1
-    conf.epochs = 25
+    conf.epochs = 300
     conf.momentum = 0.9
-    conf.batch_size = 1024
+    conf.batch_size = 1024 #1024
 
     # model
     conf.num_classes = 3
@@ -34,7 +34,7 @@ def get_default_config():
 
     # dataset
     # conf.train_root_path = './datasets/Train/train_noneLLIE'
-    conf.train_root_path = 'miniFAS/datasets/Train/train'
+    conf.train_root_path = 'miniFAS/datasets/Train/train/remove_noise'
     # save file path
     conf.snapshot_dir_path = 'miniFAS/saved_logs/snapshot'
 

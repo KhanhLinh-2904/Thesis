@@ -25,7 +25,7 @@ class FaceAntiSpoofing:
     def get_bbox_face(self, image):
         face_detection = Detection()
         image_bbox, conf = face_detection.get_bbox(image)
-        if conf < 0.87:
+        if conf < 0.7:
             return None
         else:
             return image_bbox
@@ -44,7 +44,7 @@ class FaceAntiSpoofing:
             }
         if scale is None:
             param["crop"] = False
-        img = image_cropper.crop(**param)[0]
+        img = image_cropper.crop(**param)
         test_transform = trans.Compose([
             trans.ToTensor(),
         ])
@@ -58,6 +58,8 @@ class FaceAntiSpoofing:
             return None
         img_processed = self.preprocess(image, image_bbox)
         ort_inputs = {self.ort_session.get_inputs()[0].name: to_numpy(img_processed)}
+        # print('ort_inputs.shape: ', len(ort_inputs))
+        # print('ort_inputs.shape: ', ort_inputs.values)
         onnxruntime_outputs = self.ort_session.run(None, ort_inputs)
         onnxruntime_outputs = torch.Tensor(onnxruntime_outputs)
         onnxruntime_outputs = onnxruntime_outputs.view(1,3)

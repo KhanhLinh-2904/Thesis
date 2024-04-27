@@ -14,6 +14,7 @@ def get_train_loader(conf):
     train_transform = trans.Compose([
         trans.ToPILImage(),
         trans.RandomResizedCrop(size=tuple(conf.input_size),
+        # trans.RandomResizedCrop(size=tuple([512, 512]),
                                 scale=(0.9, 1.1)),
         trans.ColorJitter(brightness=0.4,
                           contrast=0.4, saturation=0.4, hue=0.1),

@@ -9,58 +9,69 @@ from function_model.fas import FaceAntiSpoofing
 from utils.custom_utils import detect_face, tracking
 
 
-model_1 = "miniFAS/model_onnx/new/2.7_80x80_MiniFASNetV2.onnx"
-model_2 = "miniFAS/model_onnx/new/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/Zero_DCE++new.onnx'
-scale_factor = 12
+fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx"
+fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
+fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
+fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
+model_llie = 'miniFAS/model_onnx/ZeroDCE++scale12.onnx'
+
 under_threshold = 8
 over_threshold = 100
-fas_model1 = FaceAntiSpoofing(model_1)
-fas_model2 = FaceAntiSpoofing(model_2)
-lowlight_enhancer = LowLightEnhancer(scale_factor=12, model_onnx=model_llie)
+scale_factor = 12
+fas1_lowlight = FaceAntiSpoofing(fas1_lowlight_path)
+fas2_lowlight = FaceAntiSpoofing(fas2_lowlight_path)
+fas1_normal = FaceAntiSpoofing(fas1_normal_path)
+fas2_normal = FaceAntiSpoofing(fas2_normal_path)
+lowlight_enhancer = LowLightEnhancer(scale_factor=scale_factor, model_onnx=model_llie)
+
+def apply_fft_and_remove_noise(image):
+    #Return multidimensional discrete Fourier transform.
+   blurred_img = cv2.fastNlMeansDenoisingColored(image, None, 3,3,7,21)
+   return blurred_img
+
 def camera(frame_fas, result_fas, frame_verify, result_verify):
     batch_face = []
     start_fas = False
     label, color = False, (0, 0, 0)
-   
+
+    
+
+    # Create a VideoCapture object called cap
     cap = cv2.VideoCapture(0)
+
 
     # This is an infinite loop that will continue to run until the user presses the `q` key
     count_frame = 0
     while cap.isOpened():
         tic = time.time()
 
+        # Read a frame from the webcam
         ret, frame_root = cap.read()
-        frame_number = 12
-        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number - 1)
         frame_root = cv2.flip(frame_root, 1)
         frame = frame_root.copy()
+        is_lowlight = False
 
         # If the frame was not successfully captured, break out of the loop
         if ret is False:
             break
+
         threshold_img = lowlight_enhancer.get_threshold(frame)
         if threshold_img < under_threshold:
-            color = (0, 0, 255) #FAKE
             continue
         elif threshold_img < over_threshold and threshold_img >= under_threshold:
-                frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
-                frame = frame[:, :, ::-1]
+            frame = apply_fft_and_remove_noise(frame)
+            frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
+            frame = frame[:, :, ::-1]
+            is_lowlight = True
+    
+        image_bbox, _ = detect_face(frame)
 
-        image_bbox = fas_model1.get_bbox_face(frame)
-        if image_bbox is not None:
-            start_fas = tracking(image_bbox, frame)
-        else:
-            color = (0, 0, 255) #FAKE
-            start_fas = False
-
-        if start_fas and image_bbox is not None:
-            batch_face.append((image_bbox, frame))
+        if start_fas:
+            batch_face.append((image_bbox, frame, is_lowlight))
             count_frame += 1
         
         if count_frame == 5:
             frame_fas.put(batch_face)
-            # print("put")
             count_frame = 0
             batch_face = []
             start_fas = False
@@ -68,19 +79,21 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
         if not result_fas.empty():
             label = result_fas.get()
 
-       
+        if image_bbox is not None:
+            new_gister = tracking(image_bbox, frame_root)
+
+        if new_gister:
+            start_fas = True
         
         test_speed = time.time() - tic
         fps = 1/test_speed
 
-        if label:
+        if label and image_bbox is not None:
             if label == "REAL":
                 color = (0, 255, 0)
             elif label == "FAKE":
                 color = (0, 0, 255)
-        
-        
-        cv2.rectangle(frame_root, (image_bbox[0], image_bbox[1]), (image_bbox[0] + image_bbox[2], image_bbox[1] + image_bbox[3]), color, 2)
+            cv2.rectangle(frame_root, (image_bbox[0], image_bbox[1]), (image_bbox[0] + image_bbox[2], image_bbox[1] + image_bbox[3]), color, 2)
 
         # Display the FPS on the frame
         cv2.putText(frame_root, f"FPS: {fps}", (30, 30), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 255), 2, cv2.LINE_AA)
@@ -106,9 +119,17 @@ def anti_spoofing(frame_queue, result_queue):
         # Get frame from the queue
         detections = frame_queue.get()
 
-        for (bbox, frame) in detections:
+        for (bbox, frame, is_lowlight) in detections:
             frame = np.asarray(frame, dtype=np.uint8) 
-            prediction = fas_model1.predict(frame) + fas_model2.predict(frame)
+            if is_lowlight:
+                pred1 = fas1_lowlight.predict(frame)
+                pred2 = fas2_lowlight.predict(frame)
+            else:
+                pred1 = fas1_normal.predict(frame)
+                pred2 = fas2_normal.predict(frame)
+            if pred1 is None or pred2 is None:
+                continue
+            prediction = pred1 + pred2
             output = np.argmax(prediction)
 
             if output == 1:

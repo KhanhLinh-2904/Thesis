@@ -2,8 +2,8 @@ import torch
 import torch.optim
 import model
 
-model_path = 'Zero-DCE++/snapshots_Zero_DCE++/Epoch99.pth'
-model_save = 'Zero-DCE++/ZeroDCE++.onnx'
+model_path = 'Zero-DCE++/snapshots_1000Epoch99.pth'
+model_save = 'Zero-DCE++/ZeroDCE++99.onnx'
 scale_factor = 12
 
 def Convert_ONNX(scale_factor, model_path, save_path):

@@ -41,8 +41,8 @@ transformer = data_transforms['val']
 
 def detect_face(image):
     image_bbox, conf = model_test.get_bbox(image)
-    # if conf < 0.5:
-    #     image_bbox = None
+    if conf < 0.7:
+        image_bbox = None
     return image_bbox, conf
 
 

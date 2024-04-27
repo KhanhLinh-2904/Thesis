@@ -75,31 +75,34 @@ class AntiSpoofPredict(Detection):
         state_dict = torch.load(model_path, map_location=torch.device('cpu'))
 
         # #original
-        # keys = iter(state_dict)
-        # first_layer_name = keys.__next__()
-        # if first_layer_name.find('module.') >= 0:
-        #     from collections import OrderedDict
-        #     new_state_dict = OrderedDict()
-        #     for key, value in state_dict.items():
-        #         name_key = key[7:]
-        #         print(name_key)
-        #         new_state_dict[name_key] = value
-        #     self.model.load_state_dict(new_state_dict)
-        # else:
-        #     self.model.load_state_dict(state_dict)
-
-        #Truc
         keys = iter(state_dict)
         first_layer_name = keys.__next__()
-        if first_layer_name.find('module.model.') >= 0:
+        if first_layer_name.find('module.') >= 0:
             from collections import OrderedDict
             new_state_dict = OrderedDict()
             for key, value in state_dict.items():
-                name_key = key[13:]
+                name_key = key[7:]
+                pre_key = name_key[0:6]
+                if pre_key == 'model.':
+                    name_key = key[13:]
                 new_state_dict[name_key] = value
-            self.model.load_state_dict(new_state_dict, strict=False)
+            self.model.load_state_dict(new_state_dict, strict = False)
+
         else:
             self.model.load_state_dict(state_dict)
+
+        #Truc
+        # keys = iter(state_dict)
+        # first_layer_name = keys.__next__()
+        # if first_layer_name.find('module.model.') >= 0:
+        #     from collections import OrderedDict
+        #     new_state_dict = OrderedDict()
+        #     for key, value in state_dict.items():
+        #         name_key = key[13:]
+        #         new_state_dict[name_key] = value
+        #     self.model.load_state_dict(new_state_dict, strict=False)
+        # else:
+        #     self.model.load_state_dict(state_dict)
         
         #####
         

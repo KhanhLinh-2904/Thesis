@@ -15,7 +15,6 @@ import numpy as np
 class CropImage:
     @staticmethod
     def _get_new_box(src_w, src_h, bbox, scale):
-        # print(bbox)
         x = bbox[0]
         y = bbox[1]
         box_w = bbox[2]
@@ -63,4 +62,4 @@ class CropImage:
             img = org_img[left_top_y: right_bottom_y+1,
                           left_top_x: right_bottom_x+1]
             dst_img = cv2.resize(img, (out_w, out_h))
-        return dst_img, img
+        return dst_img
