@@ -33,7 +33,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
     batch_face = []
     start_fas = False
     label, color = False, (0, 0, 0)
-
+    new_gister =  False
     
 
     # Create a VideoCapture object called cap
