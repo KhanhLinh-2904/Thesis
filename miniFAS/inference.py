@@ -56,8 +56,8 @@ def enhance_one_image():
         cv2.imwrite(result_path, img)
 
 def enhance_folder():
-    filePath = 'Zero-DCE++/data/train_remove_noise'	
-    savePath = 'Zero-DCE++/data/result_train_remove_noise'
+    filePath = 'miniFAS/datasets/Test/train_re_noise'	
+    savePath = 'miniFAS/datasets/Test/train_llie/1'
     
     with torch.no_grad():
         file_list = os.listdir(filePath)

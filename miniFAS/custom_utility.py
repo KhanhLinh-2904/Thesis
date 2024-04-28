@@ -1,3 +1,4 @@
+import random
 import shutil
 import warnings
 
@@ -43,9 +44,9 @@ def crop_image(image, model_name, model_test, image_cropper):
     return img
 
 def calculate_conf_face():
-    dataset = 'Zero-DCE++/data/result_train_remove_noise'
+    dataset = 'miniFAS/datasets/Test/recog_face_Hiep'
     # train_path = '/home/user/low_light_enhancement/Zero-DCE++/data/FAS_Thuan/train'
-    new_train_path = 'miniFAS/datasets/Test/train'
+    new_train_path = 'miniFAS/datasets/Test/rec_Hiep'
     sum_conf = 0
     len_data = 0
     # labels = os.listdir(dataset)
@@ -71,7 +72,7 @@ def calculate_conf_face():
     #         len_data += 1
     # average_conf = sum_conf/len_data
     # print(f"Average confidence: {average_conf:.5f}")
-        if conf >= 0.7:
+        if conf >= 0.9:
             len_data += 1
             src_path = os.path.join(dataset, image)
             desc_path = os.path.join(new_train_path, image)
@@ -79,7 +80,7 @@ def calculate_conf_face():
     print(len_data)
 
 def calculate_threshold():
-    dataset = 'miniFAS/datasets/Test/2'
+    dataset = 'miniFAS/datasets/Test/recog_face_Hiep'
     save_llie_path = 'miniFAS/datasets/Test/train/2'
     # save_dark = 'miniFAS/datasets/Test/Dark_Dataset/2'
     sum_intensity = 0
@@ -112,23 +113,25 @@ def calculate_threshold():
 
     #for taking dataset
     images = os.listdir(dataset)
-    len_data = len(images)
-    print('len :', len_data)
+    # len_data = len(images)
+    # print('len :', len_data)
     for image in tqdm(images):
         img_path = os.path.join(dataset, image)
         img = cv2.imread(img_path)
-        sv_path1 = os.path.join(save_llie_path, image)
+        # sv_path1 = os.path.join(save_llie_path, image)
         # sv_path2 = os.path.join(save_dark, image)
-        if get_threshold(img) > 13:
-             cv2.imwrite(sv_path1, img)
+        if get_threshold(img) >= 13:
+            #  cv2.imwrite(sv_path1, img)
+            len_data += 1
         # else:
         #      cv2.imwrite(sv_path2, img)
+    print('len :', len_data)
 
 
 def remove_noise():
 
-    source_folder = '/home/user/Thesis/Zero-DCE++/data/train'  # Replace with your source folder path
-    target_folder = '/home/user/Thesis/Zero-DCE++/data/new_train'  # Replace with your target folder path
+    source_folder = 'miniFAS/datasets/Test/new_dataset/train/1'  # Replace with your source folder path
+    target_folder = 'miniFAS/datasets/Test/train_re_noise'  # Replace with your target folder path
 
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
@@ -152,31 +155,49 @@ def calculate_crop_image():
     image_cropper = CropImage()
     model_1 = '2.7_80x80_MiniFASNetV2.pth'
     model_2 = '4_0_0_80x80_MiniFASNetV2.pth'
-    dataset_path = 'miniFAS/datasets/Test/new_dataset/train'
-    check_path = 'miniFAS/datasets/Test/train'
+    dataset_path = 'miniFAS/datasets/Test/train_llie'
     dataset_train = 'miniFAS/datasets/Train/train/remove_noise'
     model1_name = '2.7_80x80'
     model2_name = '4_80x80'
     train_model1 = os.path.join(dataset_train, model1_name)
     train_model2 = os.path.join(dataset_train, model2_name)
     labels = os.listdir(dataset_path)
-    check_images = os.listdir(check_path)
     for label in tqdm(labels):
         model1_path = os.path.join(train_model1, label)
         model2_path = os.path.join(train_model2, label)
         label_path = os.path.join(dataset_path, label)
         images = os.listdir(label_path)
         for image in tqdm(images):
-            if image in check_images:
-                img_path = os.path.join(check_path, image)
-                img = cv2.imread(img_path)
-                img_1 = crop_image(img, model_1, model_test, image_cropper)
-                img_2 = crop_image(img, model_2, model_test, image_cropper)
-                cv2.imwrite(os.path.join(model1_path,image), img_1)
-                cv2.imwrite(os.path.join(model2_path,image), img_2)
+            img_path = os.path.join(label_path, image)
+            img = cv2.imread(img_path)
+            img_1 = crop_image(img, model_1, model_test, image_cropper)
+            img_2 = crop_image(img, model_2, model_test, image_cropper)
+            cv2.imwrite(os.path.join(model1_path,image), img_1)
+            cv2.imwrite(os.path.join(model2_path,image), img_2)
+
+def shuffle_and_move_data():
+    input_folder = "miniFAS/datasets/Test/rec_Hiep"
+    folder_A = "miniFAS/datasets/Test/new_dataset/test/1"
+    folder_B = "miniFAS/datasets/Test/new_dataset/train/1"
+    num_images_A = 732
+    # Get list of images
+    images = os.listdir(input_folder)
+    random.shuffle(images)
+
+    # Create folders if they don't exist
+    os.makedirs(folder_A, exist_ok=True)
+    os.makedirs(folder_B, exist_ok=True)
+
+    # Move images to folder A and B
+    for i, image in enumerate(images):
+        if i < num_images_A:
+            shutil.move(os.path.join(input_folder, image), os.path.join(folder_A, image))
+        else:
+            shutil.move(os.path.join(input_folder, image), os.path.join(folder_B, image))
 
 if __name__ == "__main__":
     # calculate_threshold()
     # calculate_conf_face()
     calculate_crop_image()
     # remove_noise()
+    # shuffle_and_move_data()
