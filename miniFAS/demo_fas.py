@@ -59,7 +59,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
         if threshold_img < under_threshold:
             continue
         elif threshold_img < over_threshold and threshold_img >= under_threshold:
-            frame = apply_fft_and_remove_noise(frame)
+            # frame = apply_fft_and_remove_noise(frame)
             frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
             frame = frame[:, :, ::-1]
             is_lowlight = True

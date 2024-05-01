@@ -18,7 +18,7 @@ from src.utility import parse_model_name
 warnings.filterwarnings('ignore')
 
 
-SAMPLE_IMAGE_PATH = "Zero-DCE++/data/result_test/"
+SAMPLE_IMAGE_PATH = "llie_fake_test/"
 
 
 # 因为安卓端APK获取的视频流宽高比为3:4,为了与之一致，所以将宽高比限制为3:4
@@ -100,12 +100,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_dir",
         type=str,
-        default="miniFAS/resources/anti_spoof_models/",
+        default="miniFAS/resources/new_train_combine/",
         help="model_lib used to test")
     parser.add_argument(
         "--image_name",
         type=str,
-        default="IMG_0357.jpg",
+        default="251_3.jpg",
         help="image used to test")
     args = parser.parse_args()
     test(args.image_name, args.model_dir, args.device_id)
