@@ -33,7 +33,7 @@ def get_default_config():
     conf.embedding_size = 128
 
     # dataset
-    conf.train_root_path = 'miniFAS/datasets/Train/train/noise_and_no_noise'
+    conf.train_root_path = 'miniFAS/datasets/Train/train/remove_noise'
     # save file path
     conf.snapshot_dir_path = 'miniFAS/saved_logs/snapshot'
 

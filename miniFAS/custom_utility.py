@@ -44,9 +44,9 @@ def crop_image(image, model_name, model_test, image_cropper):
     return img
 
 def calculate_conf_face():
-    dataset = 'miniFAS/datasets/Test/recog_face_Hiep'
+    dataset = 'miniFAS/datasets/Test/inference_Real'
     # train_path = '/home/user/low_light_enhancement/Zero-DCE++/data/FAS_Thuan/train'
-    new_train_path = 'miniFAS/datasets/Test/rec_Hiep'
+    new_train_path = 'miniFAS/datasets/Test/crop_Real'
     sum_conf = 0
     len_data = 0
     # labels = os.listdir(dataset)
@@ -131,7 +131,7 @@ def calculate_threshold():
 def remove_noise():
 
     source_folder = 'miniFAS/datasets/Test/new_dataset/train/1'  # Replace with your source folder path
-    target_folder = 'miniFAS/datasets/Test/train_re_noise'  # Replace with your target folder path
+    target_folder = 'miniFAS/datasets/Test/re_noise'  # Replace with your target folder path
 
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
@@ -155,7 +155,7 @@ def calculate_crop_image():
     image_cropper = CropImage()
     model_1 = '2.7_80x80_MiniFASNetV2.pth'
     model_2 = '4_0_0_80x80_MiniFASNetV2.pth'
-    dataset_path = 'miniFAS/datasets/Test/train_llie'
+    dataset_path = 'miniFAS/datasets/Test/crop_Real'
     dataset_train = 'miniFAS/datasets/Train/train/remove_noise'
     model1_name = '2.7_80x80'
     model2_name = '4_80x80'
@@ -195,9 +195,69 @@ def shuffle_and_move_data():
         else:
             shutil.move(os.path.join(input_folder, image), os.path.join(folder_B, image))
 
+def shuffle_and_move_folder():
+
+    # Source parent directory containing folders
+    source_parent_dir = "miniFAS/datasets/real_extract_video"
+
+    # Destination directory to move folders into
+    destination_dir = "miniFAS/datasets/real_train"
+
+    # Number of folders to move
+    num_folders_to_move = 75
+
+    # Get a list of all folders in the source parent directory
+    all_folders = [folder for folder in os.listdir(source_parent_dir) if os.path.isdir(os.path.join(source_parent_dir, folder))]
+
+    # Randomly select folders to move
+    folders_to_move = random.sample(all_folders, min(num_folders_to_move, len(all_folders)))
+
+    # Move selected folders to the destination directory
+    for folder in folders_to_move:
+        source_path = os.path.join(source_parent_dir, folder)
+        destination_path = os.path.join(destination_dir, folder)
+        shutil.move(source_path, destination_path)
+
+    print(f"{len(folders_to_move)} folders moved to {destination_dir}.")
+def copy_files_to_new_folder():
+
+    # Example usage:
+    source_directory = "miniFAS/datasets/real_test"
+    destination_directory = "miniFAS/datasets/Real/test"
+    sub_folder = os.listdir(source_directory)
+    for subfold in sub_folder:
+        new_name = '1_'+ str(subfold)
+        sub_folder_path = os.path.join(source_directory, subfold)
+        files = os.listdir(sub_folder_path)
+        cnt = 0
+        for file in files:
+            cnt += 1
+            new_name_file = new_name + '_' +str(cnt) + '.jpg'
+            destination_file_path = os.path.join(destination_directory, new_name_file)
+            source_file_path = os.path.join(sub_folder_path, file)
+            shutil.copy2(source_file_path, destination_file_path)
+            print(new_name_file)
+
+    # for root, _, files in os.walk(source_directory):
+    #     for file in files:
+    #         # Construct paths for source file and destination file
+    #         source_file_path = os.path.join(root, file)
+    #         destination_file_path = os.path.join(new_folder_path, file)
+            
+    #         # Copy the file to the new folder
+    #         shutil.copy2(source_file_path, destination_file_path)
+            
+    # print(f"All files from subfolders copied to '{new_folder_name}' in '{destination_dir}'.")
+
+
+
+
+
 if __name__ == "__main__":
     # calculate_threshold()
     # calculate_conf_face()
     calculate_crop_image()
     # remove_noise()
     # shuffle_and_move_data()
+    # shuffle_and_move_folder()
+    # copy_files_to_new_folder()

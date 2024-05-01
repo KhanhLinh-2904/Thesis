@@ -47,7 +47,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
 
         # Read a frame from the webcam
         ret, frame_root = cap.read()
-        frame_root = cv2.flip(frame_root, 1)
+        # frame_root = cv2.flip(frame_root, 1)
         frame = frame_root.copy()
         is_lowlight = False
 

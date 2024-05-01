@@ -58,35 +58,35 @@ if __name__ == "__main__":
             threshold_img = lowlight_enhancer.get_threshold(img)
             if threshold_img < under_threshold:
                 count_undefined += 1
-            elif threshold_img < over_threshold and threshold_img >= under_threshold:
-                # img = apply_fft_and_remove_noise(img)
-                img = lowlight_enhancer.enhance(img[:, :, ::-1])  
-                img = img[:, :, ::-1]
-                count_llie += 1
-                # pred1 = fas1_lowlight.predict(img)
-                # pred2 = fas2_lowlight.predict(img)
-                pred1 = fas1_normal.predict(img)
-                pred2 = fas2_normal.predict(img)
             else:
-                pred1 = fas1_normal.predict(img)
-                pred2 = fas2_normal.predict(img)
-                
-            
-            if  pred1 is None or pred2 is None:
-                count_none_face += 1    
-            else:
-                prediction = pred1 + pred2
-                output = np.argmax(prediction)
-                if output != 1 and label == "fake":
-                    tp += 1
-                elif output == 1 and label == "fake":
-                    fn += 1
-
-                elif output != 1 and label == "real":
-                    fp += 1
+                if threshold_img < over_threshold and threshold_img >= under_threshold:
+                    # img = apply_fft_and_remove_noise(img)
+                    img = lowlight_enhancer.enhance(img[:, :, ::-1])  
+                    img = img[:, :, ::-1]
+                    count_llie += 1
+                    pred1 = fas1_lowlight.predict(img)
+                    pred2 = fas2_lowlight.predict(img)
                     
-                elif output == 1 and label == "real":
-                    tn += 1
+                else:
+                    pred1 = fas1_normal.predict(img)
+                    pred2 = fas2_normal.predict(img)
+                    
+                
+                if  pred1 is None or pred2 is None:
+                    count_none_face += 1    
+                else:
+                    prediction = pred1 + pred2
+                    output = np.argmax(prediction)
+                    if output != 1 and label == "fake":
+                        tp += 1
+                    elif output == 1 and label == "fake":
+                        fn += 1
+
+                    elif output != 1 and label == "real":
+                        fp += 1
+                        
+                    elif output == 1 and label == "real":
+                        tn += 1
 
    
     print("tp:", tp)

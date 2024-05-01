@@ -56,8 +56,8 @@ def enhance_one_image():
         cv2.imwrite(result_path, img)
 
 def enhance_folder():
-    filePath = 'miniFAS/datasets/Test/train_re_noise'	
-    savePath = 'miniFAS/datasets/Test/train_llie/1'
+    filePath = 'miniFAS/datasets/Test/re_noise'	
+    savePath = 'miniFAS/datasets/Test/inference_Real'
     
     with torch.no_grad():
         file_list = os.listdir(filePath)
