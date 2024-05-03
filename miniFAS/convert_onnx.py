@@ -30,8 +30,8 @@ def Convert_ONNX(torch_model, dummy_input, save_path):
     print("Model has been converted to ONNX")
 
 def convert_miniFAS():
-    model_1 = 'miniFAS/resources/new_train_re_noise/2.7_80x80_MiniFASNetV2.pth'
-    model_2 = 'miniFAS/resources/new_train_re_noise/4_0_0_80x80_MiniFASNetV1SE.pth'
+    model_1 = 'miniFAS/resources/new_train_noise/2.7_80x80_MiniFASNetV2.pth'
+    model_2 = 'miniFAS/resources/new_train_noise/4_0_0_80x80_MiniFASNetV1SE.pth'
     model_save = 'miniFAS/model_onnx/new_re_noise'
 
     for model_path in [model_1, model_2]:
