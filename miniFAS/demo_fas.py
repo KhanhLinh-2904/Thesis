@@ -39,7 +39,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
     # Create a VideoCapture object called cap
     cap = cv2.VideoCapture(0)
 
-
+    new_gister = False
     # This is an infinite loop that will continue to run until the user presses the `q` key
     count_frame = 0
     while cap.isOpened():
