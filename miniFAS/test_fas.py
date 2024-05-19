@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 
 from function_model.fas import FaceAntiSpoofing
-from function_model.llie import LowLightEnhancer
+# from function_model.Zero_DCE import LowLightEnhancer
+from function_model.SCI import LowLightEnhancer
 
 warnings.filterwarnings("ignore")
 
@@ -16,7 +17,7 @@ fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx
 fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
 fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
 fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/ZeroDCE++scale12.onnx'
+model_llie = 'miniFAS/model_onnx/SCI.onnx'
 
 under_threshold = 8
 over_threshold = 100
@@ -51,6 +52,7 @@ if __name__ == "__main__":
         print("len folder " + label + ": ", len(images))
         TIME_START = time.time()
         for image in tqdm(images):
+            # print(image)
             prediction = np.zeros((1, 3))
             img_path = os.path.join(dir_img, image)
             img = cv2.imread(img_path)  # BGR
@@ -60,8 +62,7 @@ if __name__ == "__main__":
             else:
                 if threshold_img < over_threshold and threshold_img >= under_threshold:
                     # img = apply_fft_and_remove_noise(img)
-                    img = lowlight_enhancer.enhance(img[:, :, ::-1])  
-                    img = img[:, :, ::-1]
+                    img = lowlight_enhancer.enhance(img)  
                     count_llie += 1
                     pred1 = fas1_lowlight.predict(img)
                     pred2 = fas2_lowlight.predict(img)
@@ -70,8 +71,8 @@ if __name__ == "__main__":
                 else:
                     pred1 = fas1_normal.predict(img)
                     pred2 = fas2_normal.predict(img)
-                
-                
+                    
+                    
                 if  pred1 is None or pred2 is None:
                     count_none_face += 1    
                 else:
@@ -88,7 +89,7 @@ if __name__ == "__main__":
                     elif output == 1 and label == "real":
                         tn += 1
 
-   
+    
     print("tp:", tp)
     print("fp:", fp)
     print("fn:", fn)

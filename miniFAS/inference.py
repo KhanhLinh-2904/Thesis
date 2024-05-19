@@ -6,14 +6,15 @@ import os
 import warnings
 from tqdm import tqdm
 import numpy as np
-from function_model.llie import LowLightEnhancer
+# from function_model.Zero_DCE import LowLightEnhancer
+from function_model.SCI import LowLightEnhancer
 from function_model.fas import FaceAntiSpoofing
 
 warnings.filterwarnings("ignore")
 from matplotlib import pyplot as plt
 threshold = 100
 scale_factor = 12
-model_onnx = 'miniFAS/model_onnx/ZeroDCE++scale12.onnx'
+model_onnx = 'miniFAS/model_onnx/SCI.onnx'
 
 
 def predict_one_image():
@@ -48,16 +49,14 @@ def enhance_one_image():
         lowlight_enhancer = LowLightEnhancer(scale_factor=scale_factor, model_onnx=model_onnx)
         img = cv2.imread(filePath) 
         if lowlight_enhancer.is_lowlight(img,threshold):
-            img = img[:, :, ::-1]
             img = lowlight_enhancer.enhance(img)
-            img = img[:, :, ::-1]
 
         result_path = os.path.join(savePath, image_name)
         cv2.imwrite(result_path, img)
 
 def enhance_folder():
-    filePath = 'miniFAS/datasets/Test/re_noise'	
-    savePath = 'miniFAS/datasets/Test/inference_Real'
+    filePath = 'miniFAS/datasets/Test/new_dataset/train/0'	
+    savePath = 'miniFAS/datasets/Test/train_no/0'
     
     with torch.no_grad():
         file_list = os.listdir(filePath)
@@ -68,12 +67,10 @@ def enhance_folder():
         for file_name in tqdm(file_list):
             path_to_image = os.path.join(filePath, file_name)
             img = cv2.imread(path_to_image)
-            img = img[:, :, ::-1]
             if lowlight_enhancer.get_threshold(img) < threshold:
                 img = lowlight_enhancer.enhance(img)
                 len_llie += 1
             # img = lowlight_enhancer.enhance(img)
-            img = img[:, :, ::-1]
             result_path = os.path.join(savePath, file_name)
             cv2.imwrite(result_path, img)
         print(len_llie)

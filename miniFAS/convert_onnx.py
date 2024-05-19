@@ -3,9 +3,9 @@ import torch
 import torch.optim
 
 from src.anti_spoof_predict import AntiSpoofPredict
-from Zero_DCE_plus_plus import model
-
-
+from LLIE.Zero_DCE_plus_plus import model as Zero_DCE_model
+from LLIE.SCI import model as SCI_model
+from torch.autograd import Variable
 def Convert_ONNX(torch_model, dummy_input, save_path):
      # Export the model
     torch.onnx.export(
@@ -30,9 +30,9 @@ def Convert_ONNX(torch_model, dummy_input, save_path):
     print("Model has been converted to ONNX")
 
 def convert_miniFAS():
-    model_1 = 'miniFAS/resources/new_train_noise/2.7_80x80_MiniFASNetV2.pth'
-    model_2 = 'miniFAS/resources/new_train_noise/4_0_0_80x80_MiniFASNetV1SE.pth'
-    model_save = 'miniFAS/model_onnx/new_re_noise'
+    model_1 = 'miniFAS/resources/new_train_combine/2.7_80x80_MiniFASNetV2.pth'
+    model_2 = 'miniFAS/resources/new_train_combine/4_0_0_80x80_MiniFASNetV1SE.pth'
+    model_save = 'miniFAS/model_onnx/new_combine'
 
     for model_path in [model_1, model_2]:
         torch_model = AntiSpoofPredict(0)
@@ -49,14 +49,28 @@ def convert_Zero_DCE():
     model_path = ''
     model_save = ''
     scale_factor = 12
-    torch_model = model.enhance_net_nopool(scale_factor)
+    torch_model = Zero_DCE_model.enhance_net_nopool(scale_factor)
     torch_model.load_state_dict(
         torch.load(model_path, map_location=torch.device("cpu"))
     )
     torch_model.eval()
-    dummy_input = torch.randn(1, 3, 5472, 3648, requires_grad=True)
+    input_shape = (3, 400, 600)
+    dummy_input = Variable(torch.randn(1, *input_shape))
+    # dummy_input = torch.randn(1, 3, 5472, 3648, requires_grad=True)
     Convert_ONNX(torch_model, dummy_input, model_save)
+
+def convert_SCI():
+    model_path = 'miniFAS/LLIE/SCI/Epoch91.pth'
+    model_save = 'miniFAS/model_onnx/SCI_train.onnx'
+    torch_model = SCI_model.Finetunemodel(model_path)
+    torch_model.eval()
+    dummy_input = torch.randn(1, 3, 400, 600, requires_grad=True)
+    with torch.no_grad():
+        dummy_input = Variable(dummy_input, volatile=True)
+    Convert_ONNX(torch_model, dummy_input, model_save)
+
 
 if __name__ == '__main__':
     # convert_Zero_DCE()
     convert_miniFAS()
+    # convert_SCI()

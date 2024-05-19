@@ -25,7 +25,7 @@ def get_default_config():
     conf.gamma = 0.1
     conf.epochs = 300
     conf.momentum = 0.9
-    conf.batch_size = 1024 #1024
+    conf.batch_size = 900 #1024
 
     # model
     conf.num_classes = 3
@@ -33,7 +33,7 @@ def get_default_config():
     conf.embedding_size = 128
 
     # dataset
-    conf.train_root_path = 'miniFAS/datasets/Train/train/remove_noise'
+    conf.train_root_path = 'miniFAS/datasets/Train/train_no/remove_noise'
     # save file path
     conf.snapshot_dir_path = 'miniFAS/saved_logs/snapshot'
 

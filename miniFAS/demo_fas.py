@@ -4,7 +4,7 @@ import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt
 
-from function_model.llie import LowLightEnhancer
+from miniFAS.function_model.Zero_DCE import LowLightEnhancer
 from function_model.fas import FaceAntiSpoofing
 from utils.custom_utils import detect_face, tracking
 
@@ -13,7 +13,7 @@ fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx
 fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
 fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
 fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/ZeroDCE++scale12.onnx'
+model_llie = 'miniFAS/model_onnx/ZeroDCE++.onnx'
 
 under_threshold = 8
 over_threshold = 100
@@ -39,7 +39,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
     # Create a VideoCapture object called cap
     cap = cv2.VideoCapture(0)
 
-
+    new_gister = False
     # This is an infinite loop that will continue to run until the user presses the `q` key
     count_frame = 0
     while cap.isOpened():
@@ -60,8 +60,7 @@ def camera(frame_fas, result_fas, frame_verify, result_verify):
             continue
         elif threshold_img < over_threshold and threshold_img >= under_threshold:
             # frame = apply_fft_and_remove_noise(frame)
-            frame = lowlight_enhancer.enhance(frame[:, :, ::-1])  # RGB
-            frame = frame[:, :, ::-1]
+            frame = lowlight_enhancer.enhance(frame)  # RGB
             is_lowlight = True
     
         image_bbox, _ = detect_face(frame)
