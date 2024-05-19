@@ -1,0 +1,201 @@
+Epoch:  0
+Mean Training Loss 0.25213736296955436
+Epoch:  1
+Mean Training Loss 0.22818299672286252
+Epoch:  2
+Mean Training Loss 0.22070332077912186
+Epoch:  3
+Mean Training Loss 0.21653073686532043
+Epoch:  4
+Mean Training Loss 0.21484693501754545
+Epoch:  5
+Mean Training Loss 0.21281544973394304
+Epoch:  6
+Mean Training Loss 0.21215218382478765
+Epoch:  7
+Mean Training Loss 0.21122499806526604
+Epoch:  8
+Mean Training Loss 0.21091478230309801
+Epoch:  9
+Mean Training Loss 0.21042230216761681
+Epoch:  10
+Mean Training Loss 0.21098783091903234
+Epoch:  11
+Mean Training Loss 0.21053553147388454
+Epoch:  12
+Mean Training Loss 0.21049973540629474
+Epoch:  13
+Mean Training Loss 0.21064096695501058
+Epoch:  14
+Mean Training Loss 0.2106700443135189
+Epoch:  15
+Mean Training Loss 0.21071196464642283
+Epoch:  16
+Mean Training Loss 0.21064168070431205
+Epoch:  17
+Mean Training Loss 0.21061144523977463
+Epoch:  18
+Mean Training Loss 0.21072006884547004
+Epoch:  19
+Mean Training Loss 0.21071899011396383
+Epoch:  20
+Mean Training Loss 0.21002234622723132
+Epoch:  21
+Mean Training Loss 0.20991560525102115
+Epoch:  22
+Mean Training Loss 0.21061217867735563
+Epoch:  23
+Mean Training Loss 0.20990715378817465
+Epoch:  24
+Mean Training Loss 0.21093535632924462
+Epoch:  25
+Mean Training Loss 0.21078651916571495
+Epoch:  26
+Mean Training Loss 0.2102047401739034
+Epoch:  27
+Mean Training Loss 0.21013941964287833
+Epoch:  28
+Mean Training Loss 0.21034702556131932
+Epoch:  29
+Mean Training Loss 0.21016003630743607
+Epoch:  30
+Mean Training Loss 0.21091017424767355
+Epoch:  31
+Mean Training Loss 0.21053535499911033
+Epoch:  32
+Mean Training Loss 0.20982010523419606
+Epoch:  33
+Mean Training Loss 0.2106397648401322
+Epoch:  34
+Mean Training Loss 0.2111264526262373
+Epoch:  35
+Mean Training Loss 0.2101940739846521
+Epoch:  36
+Mean Training Loss 0.2101665527335682
+Epoch:  37
+Mean Training Loss 0.21087143678250556
+Epoch:  38
+Mean Training Loss 0.2105979304964691
+Epoch:  39
+Mean Training Loss 0.2098842967794337
+Epoch:  40
+Mean Training Loss 0.21046701191336845
+Epoch:  41
+Mean Training Loss 0.21052600342411065
+Epoch:  42
+Mean Training Loss 0.21025760080879807
+Epoch:  43
+Mean Training Loss 0.21013616084659142
+Epoch:  44
+Mean Training Loss 0.21005061375721557
+Epoch:  45
+Mean Training Loss 0.2102590611958246
+Epoch:  46
+Mean Training Loss 0.21018490852143148
+Epoch:  47
+Mean Training Loss 0.20998117550307865
+Epoch:  48
+Mean Training Loss 0.21029225800984597
+Epoch:  49
+Mean Training Loss 0.21074742720480952
+Epoch:  50
+Mean Training Loss 0.21036296668944984
+Epoch:  51
+Mean Training Loss 0.21053646876780346
+Epoch:  52
+Mean Training Loss 0.21030980069268723
+Epoch:  53
+Mean Training Loss 0.21033763588709264
+Epoch:  54
+Mean Training Loss 0.2099617490797557
+Epoch:  55
+Mean Training Loss 0.2106662305180225
+Epoch:  56
+Mean Training Loss 0.2108377993830768
+Epoch:  57
+Mean Training Loss 0.20967367389159602
+Epoch:  58
+Mean Training Loss 0.21048639026360377
+Epoch:  59
+Mean Training Loss 0.21052311301729346
+Epoch:  60
+Mean Training Loss 0.2102329941752569
+Epoch:  61
+Mean Training Loss 0.20988784460740556
+Epoch:  62
+Mean Training Loss 0.21100872553669478
+Epoch:  63
+Mean Training Loss 0.21000897742826696
+Epoch:  64
+Mean Training Loss 0.21031501513456768
+Epoch:  65
+Mean Training Loss 0.20989248076308914
+Epoch:  66
+Mean Training Loss 0.21065529229156557
+Epoch:  67
+Mean Training Loss 0.2106136174700428
+Epoch:  68
+Mean Training Loss 0.2106570712908186
+Epoch:  69
+Mean Training Loss 0.21002768329508148
+Epoch:  70
+Mean Training Loss 0.2099760268526913
+Epoch:  71
+Mean Training Loss 0.210817318238115
+Epoch:  72
+Mean Training Loss 0.21018891249712984
+Epoch:  73
+Mean Training Loss 0.21040273828202338
+Epoch:  74
+Mean Training Loss 0.21061306587391374
+Epoch:  75
+Mean Training Loss 0.21031394036268625
+Epoch:  76
+Mean Training Loss 0.21014458396856753
+Epoch:  77
+Mean Training Loss 0.21008269453347483
+Epoch:  78
+Mean Training Loss 0.21030317813396554
+Epoch:  79
+Mean Training Loss 0.20996669844123494
+Epoch:  80
+Mean Training Loss 0.21035715777555633
+Epoch:  81
+Mean Training Loss 0.21026906463490447
+Epoch:  82
+Mean Training Loss 0.21017707854915255
+Epoch:  83
+Mean Training Loss 0.2105508784898728
+Epoch:  84
+Mean Training Loss 0.20996903497134659
+Epoch:  85
+Mean Training Loss 0.21036456639982282
+Epoch:  86
+Mean Training Loss 0.21077082946068013
+Epoch:  87
+Mean Training Loss 0.21055819827103942
+Epoch:  88
+Mean Training Loss 0.21016518029101075
+Epoch:  89
+Mean Training Loss 0.2104958225166118
+Epoch:  90
+Mean Training Loss 0.21047276039512364
+Epoch:  91
+Mean Training Loss 0.20955459863822035
+Epoch:  92
+Mean Training Loss 0.21017109608652718
+Epoch:  93
+Mean Training Loss 0.21041807466717757
+Epoch:  94
+Mean Training Loss 0.21046837006466204
+Epoch:  95
+Mean Training Loss 0.21041868515239442
+Epoch:  96
+Mean Training Loss 0.21053030708115847
+Epoch:  97
+Mean Training Loss 0.21012342357168504
+Epoch:  98
+Mean Training Loss 0.20968602142435083
+Epoch:  99
+Mean Training Loss 0.21079706937928308
+Min training loss at epoch  91 :  0.20955459863822035
