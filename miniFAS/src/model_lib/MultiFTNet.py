@@ -59,19 +59,19 @@ class MultiFTNet(nn.Module):
     def forward(self, x):
         x = self.model.conv1(x)
         x = self.model.conv2_dw(x)
-        x = self.model.conv_23(x)
-        x = self.model.conv_3(x)
-        x = self.model.conv_34(x)
-        x = self.model.conv_4(x)
-        x1 = self.model.conv_45(x)
-        x1 = self.model.conv_5(x1)
-        x1 = self.model.conv_6_sep(x1)
-        x1 = self.model.conv_6_dw(x1)
-        x1 = self.model.conv_6_flatten(x1)
-        x1 = self.model.linear(x1)
-        x1 = self.model.bn(x1)
-        x1 = self.model.drop(x1)
-        cls = self.model.prob(x1)
+        x = self.model.conv_23(x) #Depthwise
+        x = self.model.conv_3(x) #Residual
+        x = self.model.conv_34(x) #Depthwise
+        x = self.model.conv_4(x) #Residual
+        x1 = self.model.conv_45(x) #Depthwise
+        x1 = self.model.conv_5(x1) #Residual
+        x1 = self.model.conv_6_sep(x1) 
+        x1 = self.model.conv_6_dw(x1) #Linear_block
+        x1 = self.model.conv_6_flatten(x1) #Flatten
+        x1 = self.model.linear(x1) #Linear
+        x1 = self.model.bn(x1) #BatchNorm1d
+        x1 = self.model.drop(x1) #Dropout
+        cls = self.model.prob(x1) #Linear
 
         if self.training:
             ft = self.FTGenerator(x)

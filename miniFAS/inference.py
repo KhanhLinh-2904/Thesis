@@ -16,6 +16,9 @@ threshold = 100
 scale_factor = 12
 model_onnx = 'miniFAS/model_onnx/SCI.onnx'
 
+def apply_fft_and_remove_noise(image):
+   blurred_img = cv2.fastNlMeansDenoisingColored(image, None, 3,3,7,21)
+   return blurred_img
 
 def predict_one_image():
     filePath = "miniFAS/datasets/Test/FAS_Thuan/fake/IMG_0357.jpg"
@@ -40,23 +43,25 @@ def predict_one_image():
             print("Fake")
 
 def enhance_one_image():
-    filePath = 'miniFAS/1_1.jpg'	
-    image_name = 're2.jpg'
+    filePath = 'miniFAS/datasets/Test/test/fake/0_1.jpg'	
+    image_name = 're3.jpg'
     savePath = 'miniFAS/'
 
     with torch.no_grad():
         print("file_name:",filePath)
         lowlight_enhancer = LowLightEnhancer(scale_factor=scale_factor, model_onnx=model_onnx)
         img = cv2.imread(filePath) 
-        if lowlight_enhancer.is_lowlight(img,threshold):
-            img = lowlight_enhancer.enhance(img)
+        # if lowlight_enhancer.is_lowlight(img,threshold):
+        img = apply_fft_and_remove_noise(img)
+
+        img = lowlight_enhancer.enhance(img)
 
         result_path = os.path.join(savePath, image_name)
         cv2.imwrite(result_path, img)
 
 def enhance_folder():
-    filePath = 'miniFAS/datasets/Test/new_dataset/train/0'	
-    savePath = 'miniFAS/datasets/Test/train_no/0'
+    filePath = 'LOL/low'	
+    savePath = 'LOL/result'
     
     with torch.no_grad():
         file_list = os.listdir(filePath)
@@ -67,9 +72,9 @@ def enhance_folder():
         for file_name in tqdm(file_list):
             path_to_image = os.path.join(filePath, file_name)
             img = cv2.imread(path_to_image)
-            if lowlight_enhancer.get_threshold(img) < threshold:
-                img = lowlight_enhancer.enhance(img)
-                len_llie += 1
+            # if lowlight_enhancer.get_threshold(img) < threshold:
+            img = lowlight_enhancer.enhance(img)
+                # len_llie += 1
             # img = lowlight_enhancer.enhance(img)
             result_path = os.path.join(savePath, file_name)
             cv2.imwrite(result_path, img)
@@ -78,5 +83,5 @@ def enhance_folder():
        
 if __name__ == '__main__':
     # predict_one_image()
-    # enhance_one_image()
-    enhance_folder()
+    enhance_one_image()
+    # enhance_folder()

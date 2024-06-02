@@ -10,6 +10,7 @@ import cv2
 from src.anti_spoof_predict import AntiSpoofPredict, Detection
 from src.generate_patches import CropImage
 from src.utility import parse_model_name
+from function_model.SCI import LowLightEnhancer
 
 def get_confidence(image):
     face_detection = Detection()
@@ -47,8 +48,10 @@ def calculate_crop_image():
     image_cropper = CropImage()
     model_1 = '2.7_80x80_MiniFASNetV2.pth'
     model_2 = '4_0_0_80x80_MiniFASNetV2.pth'
-    dataset_path = 'miniFAS/datasets/Test/train_no'
-    dataset_train = 'miniFAS/datasets/Train/train_no/noise_and_no_noise'
+    model_llie = 'miniFAS/model_onnx/SCI.onnx'
+    dataset_path = 'miniFAS/datasets/Test/new_dataset/train'
+    dataset_train = 'miniFAS/datasets/Train/No_Noise'
+    lowlight_enhancer = LowLightEnhancer(scale_factor=12, model_onnx=model_llie)
     model1_name = '2.7_80x80'
     model2_name = '4_80x80'
     train_model1 = os.path.join(dataset_train, model1_name)
@@ -62,9 +65,10 @@ def calculate_crop_image():
         for image in tqdm(images):
             img_path = os.path.join(label_path, image)
             img = cv2.imread(img_path)
-            # img = apply_fft_and_remove_noise(img)
+            img = apply_fft_and_remove_noise(img)
+            img = lowlight_enhancer.enhance(img) 
             conf = get_confidence(img)
-            # image = 're_noise_' + image
+            image = 're_noise_' + image
             if conf >= 0.9:
                 img_1 = crop_image(img, model_1, model_test, image_cropper)
                 img_2 = crop_image(img, model_2, model_test, image_cropper)

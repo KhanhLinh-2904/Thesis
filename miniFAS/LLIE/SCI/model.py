@@ -1,57 +1,130 @@
 import torch
 import torch.nn as nn
+from torchvision import models
+# class PerceptualLoss(nn.Module):
+#     def __init__(self):
+#         super(PerceptualLoss, self).__init__()
+#         vgg = models.vgg16(pretrained=True).features
+#         self.vgg_layers = nn.Sequential(*list(vgg)[:16]).eval()
+#         for param in self.vgg_layers.parameters():
+#             param.requires_grad = False
 
+#         self.mse_loss = nn.MSELoss()
+
+#     def forward(self, input, target):
+#         input_features = self.vgg_layers(input)
+#         target_features = self.vgg_layers(target)
+#         return self.mse_loss(input_features, target_features)
+    
+class GradientLoss(nn.Module):
+    def __init__(self):
+        super(GradientLoss, self).__init__()
+
+    def forward(self, input, target):
+        input_dx = input[:, :, :, :-1] - input[:, :, :, 1:]
+        input_dy = input[:, :, :-1, :] - input[:, :, 1:, :]
+        target_dx = target[:, :, :, :-1] - target[:, :, :, 1:]
+        target_dy = target[:, :, :-1, :] - target[:, :, 1:, :]
+        return torch.mean(torch.abs(input_dx - target_dx) + torch.abs(input_dy - target_dy))
+    
 class LossFunction(nn.Module):
     def __init__(self):
         super(LossFunction, self).__init__()
         self.l2_loss = nn.MSELoss()
         self.smooth_loss = SmoothLoss()
-
+        # self.perceptual_loss = PerceptualLoss()
+        self.gradient_loss = GradientLoss()
     def forward(self, input, illu):
         Fidelity_Loss = self.l2_loss(illu, input)
         Smooth_Loss = self.smooth_loss(input, illu)
-        return 1.5*Fidelity_Loss + Smooth_Loss
+        # Perceptual_Loss = self.perceptual_loss(illu, input)
+        # Gradient_Loss = self.gradient_loss(illu, input)
+        return 1.5*Fidelity_Loss + Smooth_Loss 
 
+# class EnhanceNetwork(nn.Module):
+#     def __init__(self, layers, channels):
+#         super(EnhanceNetwork, self).__init__()
+
+#         kernel_size = 3
+#         dilation = 1
+#         padding = int((kernel_size - 1) / 2) * dilation
+
+#         self.in_conv = nn.Sequential(
+#             nn.Conv2d(in_channels=3, out_channels=channels, kernel_size=kernel_size, stride=1, padding=padding),
+#             nn.ReLU()
+#         )
+
+#         self.conv = nn.Sequential(
+#             nn.Conv2d(in_channels=channels, out_channels=channels, kernel_size=kernel_size, stride=1, padding=padding),
+#             nn.BatchNorm2d(channels),
+#             nn.ReLU()
+#         )
+
+#         self.blocks = nn.ModuleList()
+#         for i in range(layers):
+#             self.blocks.append(self.conv)
+
+#         self.out_conv = nn.Sequential(
+#             nn.Conv2d(in_channels=channels, out_channels=3, kernel_size=3, stride=1, padding=1),
+#             nn.Sigmoid()
+#         )
+
+#     def forward(self, input):
+#         fea = self.in_conv(input)
+#         for conv in self.blocks:
+#             fea = fea + conv(fea)
+#         fea = self.out_conv(fea)
+
+#         illu = fea*1.15 + input
+#         illu = torch.clamp(illu, 0.0001, 1)
+
+#         return illu
+class ResidualBlock(nn.Module):
+    def __init__(self, channels):
+        super(ResidualBlock, self).__init__()
+        kernel_size = 3
+        padding = 1
+        self.conv_block = nn.Sequential(
+            nn.Conv2d(channels, channels, kernel_size, padding=padding, bias=False),
+            nn.BatchNorm2d(channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(channels, channels, kernel_size, padding=padding, bias=False),
+            nn.BatchNorm2d(channels)
+        )
+
+    def forward(self, x):
+        return x + self.conv_block(x)
 
 class EnhanceNetwork(nn.Module):
     def __init__(self, layers, channels):
         super(EnhanceNetwork, self).__init__()
-
         kernel_size = 3
-        dilation = 1
-        padding = int((kernel_size - 1) / 2) * dilation
+        padding = 1
 
         self.in_conv = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=channels, kernel_size=kernel_size, stride=1, padding=padding),
-            nn.ReLU()
+            nn.Conv2d(3, channels, kernel_size, padding=padding, bias=False),
+            nn.ReLU(inplace=True)
         )
 
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels=channels, out_channels=channels, kernel_size=kernel_size, stride=1, padding=padding),
-            nn.BatchNorm2d(channels),
-            nn.ReLU()
+        self.blocks = nn.Sequential(
+            *[ResidualBlock(channels) for _ in range(layers)]
         )
-
-        self.blocks = nn.ModuleList()
-        for i in range(layers):
-            self.blocks.append(self.conv)
 
         self.out_conv = nn.Sequential(
-            nn.Conv2d(in_channels=channels, out_channels=3, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(channels, 3, kernel_size, padding=padding, bias=False),
             nn.Sigmoid()
         )
 
     def forward(self, input):
         fea = self.in_conv(input)
-        for conv in self.blocks:
-            fea = fea + conv(fea)
+        fea = self.blocks(fea)
         fea = self.out_conv(fea)
 
-        illu = fea + input
+        # illu = fea * 0.25 + input
+        illu = fea*0.5 + input
+
         illu = torch.clamp(illu, 0.0001, 1)
-
         return illu
-
 
 class CalibrateNetwork(nn.Module):
     def __init__(self, layers, channels):
@@ -120,7 +193,7 @@ class Network(nn.Module):
         for i in range(self.stage):
             inlist.append(input_op)
             i = self.enhance(input_op)
-            r = input / i
+            r = input/ i
             r = torch.clamp(r, 0, 1)
             att = self.calibrate(r)
             input_op = input + att

@@ -61,18 +61,18 @@ if __name__ == "__main__":
                 count_undefined += 1
             else:
                 if threshold_img < over_threshold and threshold_img >= under_threshold:
-                    # img = apply_fft_and_remove_noise(img)
+                    img = apply_fft_and_remove_noise(img)
                     img = lowlight_enhancer.enhance(img)  
                     count_llie += 1
-                    pred1 = fas1_lowlight.predict(img)
-                    pred2 = fas2_lowlight.predict(img)
-                    # pred1 = fas1_normal.predict(img)
-                    # pred2 = fas2_normal.predict(img)
+                    # pred1 = fas1_lowlight.predict(img)
+                    # pred2 = fas2_lowlight.predict(img)
+                    pred1 = fas1_normal.predict(img)
+                    pred2 = fas2_normal.predict(img)
                 else:
                     pred1 = fas1_normal.predict(img)
                     pred2 = fas2_normal.predict(img)
                     
-                    
+                            
                 if  pred1 is None or pred2 is None:
                     count_none_face += 1    
                 else:

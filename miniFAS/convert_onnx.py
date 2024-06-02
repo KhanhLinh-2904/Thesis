@@ -60,8 +60,8 @@ def convert_Zero_DCE():
     Convert_ONNX(torch_model, dummy_input, model_save)
 
 def convert_SCI():
-    model_path = 'miniFAS/LLIE/SCI/Epoch91.pth'
-    model_save = 'miniFAS/model_onnx/SCI_train.onnx'
+    model_path = 'miniFAS/LLIE/SCI/difficult.pt'
+    model_save = 'miniFAS/model_onnx/SCI.onnx'
     torch_model = SCI_model.Finetunemodel(model_path)
     torch_model.eval()
     dummy_input = torch.randn(1, 3, 400, 600, requires_grad=True)
@@ -72,5 +72,5 @@ def convert_SCI():
 
 if __name__ == '__main__':
     # convert_Zero_DCE()
-    convert_miniFAS()
-    # convert_SCI()
+    # convert_miniFAS()
+    convert_SCI()
