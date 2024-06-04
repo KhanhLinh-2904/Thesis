@@ -13,11 +13,11 @@ from function_model.SCI import LowLightEnhancer
 warnings.filterwarnings("ignore")
 
 dataset = "miniFAS/datasets/Test/test"
-fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx"
-fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
+fas1_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/2.7_80x80_MiniFASNetV2.onnx"
+fas2_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/4_0_0_80x80_MiniFASNetV1SE.onnx"
 fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
 fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/SCI.onnx'
+model_llie = 'miniFAS/model_onnx/SCI_old.onnx'
 
 under_threshold = 8
 over_threshold = 100
@@ -61,13 +61,13 @@ if __name__ == "__main__":
                 count_undefined += 1
             else:
                 if threshold_img < over_threshold and threshold_img >= under_threshold:
-                    img = apply_fft_and_remove_noise(img)
+                    # img = apply_fft_and_remove_noise(img)
                     img = lowlight_enhancer.enhance(img)  
                     count_llie += 1
-                    # pred1 = fas1_lowlight.predict(img)
-                    # pred2 = fas2_lowlight.predict(img)
-                    pred1 = fas1_normal.predict(img)
-                    pred2 = fas2_normal.predict(img)
+                    pred1 = fas1_lowlight.predict(img)
+                    pred2 = fas2_lowlight.predict(img)
+                    # pred1 = fas1_normal.predict(img)
+                    # pred2 = fas2_normal.predict(img)
                 else:
                     pred1 = fas1_normal.predict(img)
                     pred2 = fas2_normal.predict(img)

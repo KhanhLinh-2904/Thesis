@@ -30,9 +30,9 @@ def Convert_ONNX(torch_model, dummy_input, save_path):
     print("Model has been converted to ONNX")
 
 def convert_miniFAS():
-    model_1 = 'miniFAS/resources/new_train_combine/2.7_80x80_MiniFASNetV2.pth'
-    model_2 = 'miniFAS/resources/new_train_combine/4_0_0_80x80_MiniFASNetV1SE.pth'
-    model_save = 'miniFAS/model_onnx/new_combine'
+    model_1 = 'miniFAS/resources/train_SCI_miniFAS/2.7_80x80_MiniFASNetV2.pth'
+    model_2 = 'miniFAS/resources/train_SCI_miniFAS/4_0_0_80x80_MiniFASNetV1SE.pth'
+    model_save = 'miniFAS/model_onnx/train_SCI_miniFAS'
 
     for model_path in [model_1, model_2]:
         torch_model = AntiSpoofPredict(0)
@@ -72,5 +72,5 @@ def convert_SCI():
 
 if __name__ == '__main__':
     # convert_Zero_DCE()
-    # convert_miniFAS()
-    convert_SCI()
+    convert_miniFAS()
+    # convert_SCI()

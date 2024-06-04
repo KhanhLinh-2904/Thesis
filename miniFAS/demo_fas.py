@@ -4,16 +4,16 @@ import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt
 
-from miniFAS.function_model.Zero_DCE import LowLightEnhancer
+from function_model.SCI import LowLightEnhancer
 from function_model.fas import FaceAntiSpoofing
 from utils.custom_utils import detect_face, tracking
 
 
-fas1_lowlight_path = "miniFAS/model_onnx/new_combine/2.7_80x80_MiniFASNetV2.onnx"
-fas2_lowlight_path = "miniFAS/model_onnx/new_combine/4_0_0_80x80_MiniFASNetV1SE.onnx"
+fas1_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/2.7_80x80_MiniFASNetV2.onnx"
+fas2_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/4_0_0_80x80_MiniFASNetV1SE.onnx"
 fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
 fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/ZeroDCE++.onnx'
+model_llie = 'miniFAS/model_onnx/SCI_old.onnx'
 
 under_threshold = 8
 over_threshold = 100

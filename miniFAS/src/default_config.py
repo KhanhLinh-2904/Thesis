@@ -25,7 +25,7 @@ def get_default_config():
     conf.gamma = 0.1
     conf.epochs = 300
     conf.momentum = 0.9
-    conf.batch_size = 1024 #1024
+    conf.batch_size = 900 #1024
 
     # model
     conf.num_classes = 3
