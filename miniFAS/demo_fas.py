@@ -13,7 +13,7 @@ fas1_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/2.7_80x80_MiniFASNetV
 fas2_lowlight_path = "miniFAS/model_onnx/train_SCI_miniFAS/4_0_0_80x80_MiniFASNetV1SE.onnx"
 fas1_normal_path = "miniFAS/model_onnx/2.7_80x80_MiniFASNetV2.onnx"
 fas2_normal_path = "miniFAS/model_onnx/4_0_0_80x80_MiniFASNetV1SE.onnx"
-model_llie = 'miniFAS/model_onnx/SCI_old.onnx'
+model_llie = 'miniFAS/model_onnx/SCI.onnx'
 
 under_threshold = 8
 over_threshold = 100
